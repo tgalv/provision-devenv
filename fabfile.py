@@ -34,6 +34,7 @@ def build(project, branch = None):
     	if branch is not None:
     	    local("git fetch")
             local("git checkout {0}".format(branch,))
+	    local("git pull")
         local('c:\\Python34\\python.exe setup.py sdist')
 
 
