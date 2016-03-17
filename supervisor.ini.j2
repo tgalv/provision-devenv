@@ -1,0 +1,7 @@
+[program:process-digital-mortgage]
+autostart=true
+autorestart=true
+stopsignal=QUIT
+user=vagrant
+command={{ COMMAND }}
+environment=SETTINGS={{ ENVIRONMENT }}
