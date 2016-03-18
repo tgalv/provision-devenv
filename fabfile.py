@@ -72,11 +72,11 @@ def supervisorctl_reload():
 
 
 @task
-def provision(project, branch):
+def provision(project, branch, port):
     execute(casework_repo, project)
     execute(build, project, branch)
     execute(deploy, project)
-    cmd = project.replace("-", "_")
+    cmd = "{0} -p {1}".format(project.replace("-", "_"), port)
     execute(supervisord_config, project, cmd, 'process_digital_mortgage.config.DevelopmentConfig')
     execute(supervisorctl_reload)
 
