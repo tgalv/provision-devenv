@@ -59,9 +59,9 @@ def put_supervisor_ini(fname):
 
 
 @task
-def supervisord_config(project, command, environment):
+def supervisord_config(project, program, command, environment):
     fname = "{0}.ini".format(project,)
-    ini_file = templates.render_supervisor(fname, command, environment)
+    ini_file = templates.render_supervisor(fname, program, command, environment)
     execute(put_supervisor_ini, ini_file)
 
 
@@ -72,12 +72,14 @@ def supervisorctl_reload():
 
 
 @task
-def provision(project, branch, port):
+def provision(project, branch, port, config):
     execute(casework_repo, project)
     execute(build, project, branch)
     execute(deploy, project)
-    cmd = "{0} -p {1}".format(project.replace("-", "_"), port)
-    execute(supervisord_config, project, cmd, 'process_digital_mortgage.config.DevelopmentConfig')
+    py_name = "{0}".format(project.replace("-", "_"),)
+    cmd = "{0} -p {1}".format(py_name, port)
+    conf = '{0}.config.{1}'.format(py_name, config)
+    execute(supervisord_config, project, py_name, cmd, conf)
     execute(supervisorctl_reload)
 
 
