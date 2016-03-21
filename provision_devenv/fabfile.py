@@ -80,6 +80,7 @@ def provision(project, branch, port, config):
     py_name = "{0}".format(project.replace("-", "_"),)
     cmd = "{0} -p {1}".format(py_name, port)
     conf = '{0}.config.{1}'.format(py_name, config)
+    execute(backup_supervisord_config)
     execute(supervisord_config, project, py_name, cmd, conf)
     execute(supervisorctl_reload)
 
