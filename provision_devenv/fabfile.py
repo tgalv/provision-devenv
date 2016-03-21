@@ -73,6 +73,7 @@ def supervisorctl_reload():
 
 @task
 def provision(project, branch, port, config):
+    execute(vagrant)
     execute(casework_repo, project)
     execute(build, project, branch)
     execute(deploy, project)
