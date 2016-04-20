@@ -4,6 +4,9 @@ from fabric.api import env, local, run, sudo, put, local, cd, lcd, task, execute
 
 import templates
 
+REPO_ROOT = "git@github.com:tgalv"
+PYTHON3 = "python3"
+
 
 @task
 def vagrant():
@@ -14,7 +17,7 @@ def vagrant():
     # use vagrant ssh key
     result = local('vagrant ssh-config | grep IdentityFile', capture=True)
     #env.key_filename = result.split()[1]
-    env.key_filename = ".vagrant//machines//default//virtualbox//private_key"
+    env.key_filename = ".vagrant//machines//dev//virtualbox//private_key"
 
 
 @task
@@ -23,9 +26,9 @@ def uname():
 
 
 @task
-def casework_repo(project):
+def clone_repo(project):
     if not os.path.exists(project):
-        local('git clone git@git.lr.net:casework/{0}.git'.format(project,))
+        local('git clone {0}/{1}.git'.format(REPO_ROOT, project))
 
 
 @task
@@ -35,7 +38,7 @@ def build(project, branch = None):
     	    local("git fetch")
             local("git checkout {0}".format(branch,))
 	    local("git pull")
-        local('c:\\Python34\\python.exe setup.py sdist')
+        local('{0} setup.py sdist'.format(PYTHON3,))
 
 
 @task
@@ -45,6 +48,11 @@ def deploy(project):
     put(os.path.join(dirname, fname),
       	"/home/vagrant")
     sudo("pip install {0}".format(fname,))
+
+
+@task
+def install_supervisor():
+    sudo("pip install supervisor")
 
 
 @task
@@ -74,9 +82,10 @@ def supervisorctl_reload():
 @task
 def provision(project, branch, port, config):
     execute(vagrant)
-    execute(casework_repo, project)
+    execute(clone_repo, project)
     execute(build, project, branch)
     execute(deploy, project)
+    execute(install_supervisor)
     py_name = "{0}".format(project.replace("-", "_"),)
     cmd = "{0} -p {1}".format(py_name, port)
     conf = '{0}.config.{1}'.format(py_name, config)
