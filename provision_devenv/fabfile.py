@@ -65,6 +65,9 @@ def install_supervisor():
 
 @task
 def init_supervisord_config():
+    sudo("echo_supervisord_conf > /etc/supervisord.conf")
+    sudo("sed -i 's/;\[include\]/\[include\]/' /etc/supervisord.conf")
+    sudo("echo 'files = /etc/supervisord.d/*.ini' >> /etc/supervisord.conf")
     if os.path.exists("/etc/supervisord.d"):
         sudo("mv /etc/supervisord.d /etc/supervisord.d.bak")
     #sudo("mkdir /etc/supervisord.d")
