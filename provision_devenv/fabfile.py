@@ -1,10 +1,16 @@
 import os
+import sys
 
 from fabric.api import env, local, run, sudo, put, local, cd, lcd, task, execute, shell_env
 
 import templates
 
-REPO_ROOT = "git@github.com:tgalv"
+REPO_ROOT = os.getenv("REPO_ROOT")
+
+if not REPO_ROOT:
+    sys.exit("Please set the REPO_ROOT environment variable. e.g. `export REPO_ROOT=git@github.com:pythonista`")
+    
+
 PYTHON3 = "python3"
 
 
