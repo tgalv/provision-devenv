@@ -64,9 +64,10 @@ def install_supervisor():
 
 
 @task
-def backup_supervisord_config():
-    sudo("mv /etc/supervisord.d /etc/supervisord.d.bak")
-    sudo("mkdir /etc/supervisord.d")
+def init_supervisord_config():
+    if os.path.exists("/etc/supervisord.d"):
+        sudo("mv /etc/supervisord.d /etc/supervisord.d.bak")
+    #sudo("mkdir /etc/supervisord.d")
 
 
 @task
@@ -97,7 +98,7 @@ def provision(project, branch, port, config):
     py_name = "{0}".format(project.replace("-", "_"),)
     cmd = "{0} -p {1}".format(py_name, port)
     conf = '{0}.config.{1}'.format(py_name, config)
-    execute(backup_supervisord_config)
+    execute(init_supervisord_config)
     execute(supervisord_config, project, py_name, cmd, conf)
     execute(supervisorctl_reload)
 
