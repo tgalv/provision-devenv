@@ -21,6 +21,14 @@ def vagrant():
 
 
 @task
+def install_sftp():
+    sudo("yum install -y vsftpd")
+    sudo("yum install -y openssh-clients")
+    sudo("sudo sed -i 's|/usr/lib/openssh/sftp-server|internal-sftp|' /etc/ssh/sshd_config")
+    sudo("service sshd restart")
+
+
+@task
 def uname():
     run('uname -a')
 
