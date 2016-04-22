@@ -1,7 +1,10 @@
 import os
 import sys
+from time import sleep
+
 
 from fabric.api import env, local, run, sudo, put, local, cd, lcd, task, execute, shell_env
+from fabric.contrib.files import exists
 
 import templates
 
@@ -32,6 +35,7 @@ def install_sftp():
     sudo("yum install -y openssh-clients")
     sudo("sudo sed -i 's|/usr/lib/openssh/sftp-server|internal-sftp|' /etc/ssh/sshd_config")
     sudo("service sshd restart")
+    sleep(5)
 
 
 @task
@@ -74,13 +78,12 @@ def init_supervisord_config():
     sudo("echo_supervisord_conf > /etc/supervisord.conf")
     sudo("sed -i 's/;\[include\]/\[include\]/' /etc/supervisord.conf")
     sudo("echo 'files = /etc/supervisord.d/*.ini' >> /etc/supervisord.conf")
-    if os.path.exists("/etc/supervisord.d"):
-        sudo("mv /etc/supervisord.d /etc/supervisord.d.bak")
-    #sudo("mkdir /etc/supervisord.d")
-
+    
 
 @task
 def put_supervisor_ini(fname):
+    if not exists('/etc/supervisord.d', use_sudo=True):
+        sudo('mkdir /etc/supervisord.d')
     put(fname, "/etc/supervisord.d/", use_sudo=True)
 
 
@@ -93,6 +96,7 @@ def supervisord_config(project, program, command, environment):
 
 @task
 def supervisorctl_reload():
+    #sudo("supervisord")
     sudo("supervisorctl reload")
     sudo("supervisorctl status")
 
@@ -100,6 +104,7 @@ def supervisorctl_reload():
 @task
 def provision(project, branch, port, config):
     execute(vagrant)
+    execute(install_sftp)
     execute(clone_repo, project)
     execute(build, project, branch)
     execute(deploy, project)
