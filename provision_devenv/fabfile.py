@@ -3,7 +3,7 @@ import sys
 from time import sleep
 
 
-from fabric.api import env, local, run, sudo, put, local, cd, lcd, task, execute, shell_env
+from fabric.api import env, local, run, sudo, put, local, cd, lcd, task, execute, shell_env, settings
 from fabric.contrib.files import exists
 
 import templates
@@ -63,9 +63,10 @@ def build(project, branch = None):
 def deploy(project):
     dirname = "./{0}/dist".format(project,)
     fname = sorted(os.listdir(dirname))[-1]
+
     put(os.path.join(dirname, fname),
       	"/home/vagrant")
-    sudo("pip install {0}".format(fname,))
+    sudo("pip3 install {0}".format(fname,))
 
 
 @task
@@ -88,21 +89,23 @@ def put_supervisor_ini(fname):
 
 
 @task
-def supervisord_config(project, program, command, environment):
-    fname = "{0}.ini".format(project,)
+def supervisord_config(program, command, environment):
+    fname = "{0}.ini".format(program,)
     ini_file = templates.render_supervisor(fname, program, command, environment)
     execute(put_supervisor_ini, ini_file)
 
 
 @task
 def supervisorctl_reload():
-    #sudo("supervisord")
+    sleep(10)
+    with settings(warn_only=True):
+        sudo("supervisord")
     sudo("supervisorctl reload")
     sudo("supervisorctl status")
 
 
 @task
-def provision(project, branch, port, config):
+def provision(project, branch, port, config, service_name=None):
     execute(vagrant)
     execute(install_sftp)
     execute(clone_repo, project)
@@ -110,10 +113,12 @@ def provision(project, branch, port, config):
     execute(deploy, project)
     execute(install_supervisor)
     py_name = "{0}".format(project.replace("-", "_"),)
-    cmd = "{0} -p {1}".format(py_name, port)
+    cmd = "/usr/local/bin/{0} -p {1}".format(py_name, port)
     conf = '{0}.config.{1}'.format(py_name, config)
     execute(init_supervisord_config)
-    execute(supervisord_config, project, py_name, cmd, conf)
+    if service_name is None:
+        service_name=py_name
+    execute(supervisord_config, service_name, cmd, conf)
     execute(supervisorctl_reload)
 
 
