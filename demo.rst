@@ -2,7 +2,7 @@
 DEMO 2016-04-26
 ===============
 
-Demonstration of hot swapping of collaborating microservices.
+Demonstration of hot swapping collaborating microservices.
 
 1. Provision
 ------------
@@ -20,7 +20,7 @@ deploy boiler_plate to the dev-env as three services: boiler_plate, bp_server_50
 
 boiler_plate is running on Port 5000 in server mode. Run a health check::
 
-    fab -f /Users/tomgalvin/projects/provision-devenv/provision_devenv/fabfile.py vagrant curl:accept:application/json,http://127.0.0.1:5000/helloworld/
+    fab -f /path/to/projects/provision-devenv/provision_devenv/fabfile.py vagrant curl:accept:application/json,http://127.0.0.1:5000/helloworld/
     [localhost] local: vagrant ssh-config | grep IdentityFile
     [127.0.0.1:2222] Executing task 'curl'
     [127.0.0.1:2222] run: curl -H accept:application/json http://127.0.0.1:5000/helloworld/
@@ -34,11 +34,11 @@ boiler_plate is running on Port 5000 in server mode. Run a health check::
 
 Put boiler_plate in "Client Mode"::
 
-    fab -f /Users/tomgalvin/projects/provision-devenv/provision_devenv/fabfile.py vagrant flask_config:boiler_plate,5000,DemoClientEndpoint5001
+    fab -f /path/to/projects/provision-devenv/provision_devenv/fabfile.py vagrant flask_config:boiler_plate,5000,DemoClientEndpoint5001
 
 Curl again, we can see that boiler_plate is now hitting bp_server_5001::
 
-    $ fab -f /Users/tomgalvin/projects/provision-devenv/provision_devenv/fabfile.py vagrant curl:accept:application/json,http://127.0.0.1:5000/helloworld/
+    $ fab -f /path/to/projects/provision-devenv/provision_devenv/fabfile.py vagrant curl:accept:application/json,http://127.0.0.1:5000/helloworld/
     [localhost] local: vagrant ssh-config | grep IdentityFile
     [127.0.0.1:2222] Executing task 'curl'
     [127.0.0.1:2222] run: curl -H accept:application/json http://127.0.0.1:5000/helloworld/
@@ -49,11 +49,11 @@ Curl again, we can see that boiler_plate is now hitting bp_server_5001::
 
 This models how a service maybe swapped out for a stub::
 
-    fab -f /Users/tomgalvin/projects/provision-devenv/provision_devenv/fabfile.py vagrant flask_config:boiler_plate,5000,DemoClientEndpoint5002
+    fab -f /path/to/projects/provision-devenv/provision_devenv/fabfile.py vagrant flask_config:boiler_plate,5000,DemoClientEndpoint5002
 
 We can see that boiler_plate is now hitting bp_server_5002::
 
-    fab -f /Users/tomgalvin/projects/provision-devenv/provision_devenv/fabfile.py vagrant curl:accept:application/json,http://127.0.0.1:5000/helloworld/
+    fab -f /path/to/projects/provision-devenv/provision_devenv/fabfile.py vagrant curl:accept:application/json,http://127.0.0.1:5000/helloworld/
     [localhost] local: vagrant ssh-config | grep IdentityFile
     [127.0.0.1:2222] Executing task 'curl'
     [127.0.0.1:2222] run: curl -H accept:application/json http://127.0.0.1:5000/helloworld/
