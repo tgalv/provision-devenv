@@ -28,6 +28,15 @@ def vagrant():
     #env.key_filename = result.split()[1]
     env.key_filename = ".vagrant//machines//dev//virtualbox//private_key"
 
+@task
+def uname():
+    run('uname -a')
+
+
+#################
+# PREREQS
+#################
+
 
 @task
 def install_sftp():
@@ -39,8 +48,13 @@ def install_sftp():
 
 
 @task
-def uname():
-    run('uname -a')
+def install_supervisor():
+    sudo("pip install supervisor")
+
+
+#################
+# PROVISION
+#################
 
 
 @task
@@ -67,11 +81,6 @@ def deploy(project):
     put(os.path.join(dirname, fname),
       	"/home/vagrant")
     sudo("pip3 install {0}".format(fname,))
-
-
-@task
-def install_supervisor():
-    sudo("pip install supervisor")
 
 
 @task
@@ -105,13 +114,7 @@ def supervisorctl_reload():
 
 
 @task
-def provision(project, branch, port, config, service_name=None):
-    execute(vagrant)
-    execute(install_sftp)
-    execute(clone_repo, project)
-    execute(build, project, branch)
-    execute(deploy, project)
-    execute(install_supervisor)
+def flask_config(project, port, config, service_name = None):
     py_name = "{0}".format(project.replace("-", "_"),)
     cmd = "/usr/local/bin/{0} -p {1}".format(py_name, port)
     conf = '{0}.config.{1}'.format(py_name, config)
@@ -122,3 +125,16 @@ def provision(project, branch, port, config, service_name=None):
     execute(supervisorctl_reload)
 
 
+@task
+def provision(project, branch, port, config, service_name=None):
+    execute(vagrant)
+    execute(clone_repo, project)
+    execute(build, project, branch)
+    execute(deploy, project)
+    execute(install_supervisor)
+    execute(project, port, config, service_name)
+
+
+@task
+def curl(header, url):
+    run("curl -H {0} {1}".format(header, url))
