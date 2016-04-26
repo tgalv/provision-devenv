@@ -131,8 +131,7 @@ def provision(project, branch, port, config, service_name=None):
     execute(clone_repo, project)
     execute(build, project, branch)
     execute(deploy, project)
-    execute(install_supervisor)
-    execute(project, port, config, service_name)
+    execute(flask_config, project, port, config, service_name)
 
 
 @task
