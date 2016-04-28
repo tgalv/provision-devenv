@@ -34,7 +34,7 @@ def vagrant():
     # use vagrant ssh key
     result = local('vagrant ssh-config | grep IdentityFile', capture=True)
     #env.key_filename = result.split()[1]
-    env.key_filename = VAGRANT_KEY
+    env.key_filename = ".vagrant//machines//dev//virtualbox//private_key"
 
 @task
 def uname():
