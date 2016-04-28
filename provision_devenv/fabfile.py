@@ -14,7 +14,15 @@ if not REPO_ROOT:
     sys.exit("Please set the REPO_ROOT environment variable. e.g. `export REPO_ROOT=git@github.com:pythonista`")
     
 
-PYTHON3 = "python3"
+PYTHON3 = os.getenv("PYTHON3")
+
+if not PYTHON3:
+    PYTHON3 = "python3"
+
+VAGRANT_KEY = os.getenv("VAGRANT_KEY")
+
+if not VAGRANT_KEY:
+    VAGRANT_KEY = ".vagrant/machines/default/virtualbox/private_key"
 
 
 @task
