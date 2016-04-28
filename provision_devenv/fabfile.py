@@ -24,6 +24,7 @@ VAGRANT_KEY = os.getenv("VAGRANT_KEY")
 if not VAGRANT_KEY:
     VAGRANT_KEY = ".vagrant/machines/default/virtualbox/private_key"
 
+print("Vagrant key: {0}".format(VAGRANT_KEY,))
 
 @task
 def vagrant():
@@ -34,7 +35,7 @@ def vagrant():
     # use vagrant ssh key
     result = local('vagrant ssh-config | grep IdentityFile', capture=True)
     #env.key_filename = result.split()[1]
-    env.key_filename = ".vagrant//machines//dev//virtualbox//private_key"
+    env.key_filename = VAGRANT_KEY
 
 @task
 def uname():
