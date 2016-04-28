@@ -125,7 +125,7 @@ def supervisorctl_reload():
 @task
 def flask_config(project, port, config, service_name = None):
     py_name = "{0}".format(project.replace("-", "_"),)
-    cmd = "/usr/local/bin/{0} -p {1}".format(py_name, port)
+    cmd = "env PATH='/usr/local/bin:%(ENV_PATH)s' {0} -p {1}".format(py_name, port)
     conf = '{0}.config.{1}'.format(py_name, config)
     execute(init_supervisord_config)
     if service_name is None:
