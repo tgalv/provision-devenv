@@ -47,7 +47,7 @@ Setup [Fabric] (http://www.fabfile.org/) on your host
 For Windows without admin privileges you can used [precompiled binaries] (http://www.voidspace.org.uk/python/modules.shtml#pycrypto)
 
 '''
-$ fab -f path/to/fabfile.py vagrant provision:my-flask-project,my_branch,5000
+fab -f /path/to/fabfile.py vagrant provision:boiler_plate,endpoint-demo,5000,DevelopmentConfig
 '''
 
 ## 2. API
